@@ -5,11 +5,15 @@ import android.arch.persistence.room.Dao
 import android.arch.persistence.room.Delete
 import android.arch.persistence.room.Insert
 import android.arch.persistence.room.Query
+import com.example.mymovies.FavoriteActivity
 
 @Dao
 interface MoviesDAO {
     @Query("select * from movies")
     fun getAllMovies():LiveData<List<Movie>>
+
+    @Query("select * from favourite_movies")
+    fun getAllFavouriteMovies():LiveData<List<FavoriteMovie>>
 
     @Query("select * from movies where id == :movieId")
     fun getMovieById(movieId:Int):Movie
@@ -22,4 +26,13 @@ interface MoviesDAO {
 
     @Delete
     fun deleteMovie(movie: Movie)
+
+    @Insert
+    fun insertFavouriteMovie(fav_movie: FavoriteMovie)
+
+    @Delete
+    fun deleteFavouriteMovie(fav_movie: FavoriteMovie)
+
+    @Query("select * from favourite_movies where id == :movieId")
+    fun getFavouriteMovieById(movieId:Int):FavoriteMovie
 }

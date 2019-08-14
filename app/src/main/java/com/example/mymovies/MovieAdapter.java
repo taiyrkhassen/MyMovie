@@ -49,7 +49,11 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
         }
         Movie movie = movies.get(i);
         ImageView posterImage = movieViewHolder.imagePoster;
-        Picasso.get().load(movie.getPosterPath()).into(posterImage);
+        if(!movie.getPosterPath().equals("https://image.tmdb.org/t/p/w185null")) {
+            Picasso.get().load(movie.getPosterPath()).into(posterImage);
+        } else {
+            Picasso.get().load(R.drawable.unavailable).fit().into(posterImage);
+        }
     }
 
     @Override

@@ -5,7 +5,7 @@ import android.arch.persistence.room.Room
 import android.arch.persistence.room.RoomDatabase
 import android.content.Context
 
-@Database(entities = [Movie::class],  version = 1 , exportSchema = false)
+@Database(entities = [Movie::class, FavoriteMovie::class],  version = 2 , exportSchema = false)
 abstract class MovieDatabase : RoomDatabase() {
     companion object {
         private var movieDatabase: MovieDatabase? = null
@@ -14,7 +14,9 @@ abstract class MovieDatabase : RoomDatabase() {
         fun getInstance(context: Context): MovieDatabase? {
             synchronized(LOCK) {
                 if (movieDatabase == null) {
-                    movieDatabase = Room.databaseBuilder(context, MovieDatabase::class.java, DB_NAME).build()
+                    movieDatabase = Room.databaseBuilder(context, MovieDatabase::class.java, DB_NAME)
+                            .fallbackToDestructiveMigration() // udalyaem vse starye dannye i dobavlyaem novye
+                            .build()
                 }
             }
             return movieDatabase

@@ -4,7 +4,7 @@ import android.arch.persistence.room.Entity
 import android.arch.persistence.room.PrimaryKey
 
 @Entity(tableName = "movies")
-class Movie {
+open class Movie {
     @PrimaryKey
     var id: Int = 0;
     var voteCount: Int = 0;
