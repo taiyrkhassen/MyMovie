@@ -21,9 +21,6 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     fun getMovieById(id: Int): Movie? {
         return GetMovieTask().execute(id).get()
     }
-    fun getFavouriteMovieById(id: Int): FavoriteMovie? {
-        return GetFavouriteMovieTask().execute(id).get()
-    }
 
     fun insertMovie(movie:Movie){
         InsertMovieTask().execute(movie)
@@ -43,6 +40,12 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     fun deleteFavouriteMovie(movie:FavoriteMovie){
         DeleteFavouriteMovieTask().execute(movie)
     }
+
+    fun getFavouriteMovieById(id: Int): FavoriteMovie? {
+        return GetFavouriteMovieTask().execute(id).get()
+    }
+
+
 
     private class GetMovieTask : AsyncTask<Int, Void, Movie>() {
         override fun doInBackground(vararg params: Int?): Movie? {
@@ -103,5 +106,17 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             return movie
         }
     }
+
+/*
+    //не нужно так как рум это делает за нас, в начале мы уже получаем обьект лайвДата
+    private class GetAllFavouriteMovieTask : AsyncTask<Void, Void, LiveData<List<FavoriteMovie>>>() {
+        override fun doInBackground(vararg params: Void?): LiveData<List<FavoriteMovie>>? {
+            var favMovieLive:LiveData<List<FavoriteMovie>>? = null
+            params[0]?.let{
+                favMovieLive = database.moviesDao().getAllFavouriteMovies()
+            }
+            return favMovieLive
+        }
+    }*/
 
 }

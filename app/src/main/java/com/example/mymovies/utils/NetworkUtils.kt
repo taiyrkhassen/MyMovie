@@ -16,8 +16,9 @@ import java.net.URL
 class NetworkUtils {
     companion object {
         private var BASE_URL = "http://api.themoviedb.org/3/discover/movie"
-
-
+        private var BASE_TRAILER_URL = "https://api.themoviedb.org/3/movie/%S/videos"
+        private var BASE_REVIEWS_URL = "https://api.themoviedb.org/3/movie/%S/reviews"
+        var BASE_YOUTUBE_URL = "https://www.youtube.com/watch?v="
 
         var PARAMS_API_KEY = "api_key"
         var PARAMS_LANGUAGE = "language"
@@ -31,6 +32,29 @@ class NetworkUtils {
 
         var BY_POPULARITY = 0
         var BY_RATING = 1
+
+        fun buildUrlReviews(id:Int):URL?{
+            var result:URL? = null
+            val url = String.format(BASE_REVIEWS_URL, id.toString())
+            var uri = Uri.parse(url).buildUpon()
+                .appendQueryParameter(PARAMS_API_KEY, API_KEY)
+                .appendQueryParameter(PARAMS_LANGUAGE, LANGUAGE)
+                .build()
+            result = URL(uri.toString())
+            return result
+        }
+
+        fun buildUrlTrailer(id:Int):URL?{
+            var result:URL? = null
+            val url = String.format(BASE_TRAILER_URL, id.toString())
+            val uri: Uri = Uri.parse(url).buildUpon()
+                .appendQueryParameter(PARAMS_API_KEY, API_KEY)
+                .appendQueryParameter(PARAMS_LANGUAGE, LANGUAGE)
+                .build()
+            result = URL(uri.toString())
+            return result
+        }
+
         fun buildURL(sortBy: Int, page: Int): URL? {
             var result: URL? = null
             var sortHow: String? = null
@@ -87,8 +111,21 @@ class NetworkUtils {
             val url = buildURL(sortBy, page)
             return JSONLoadTask().execute(url).get()
         }
+
+        fun getJSONobjectVideo(id: Int): JSONObject? {
+            val url = buildUrlTrailer(id)
+            return JSONLoadTask().execute(url).get()
+        }
+
+        fun getJSONobjectReviews(id: Int): JSONObject? {
+            val url = buildUrlReviews(id)
+            return JSONLoadTask().execute(url).get()
+        }
     }
 
+
 }
+
+
 //http://api.themoviedb.org/3/discover/movie?api_key=bc0697c61cac9317cc0873d8477d1b07&language=ru-RU&sort_by=popularity.desc&page=2
 //https://api.themoviedb.org/3/discover/movie?api_key=bc0697c61cac9317cc0873d8477d1b07&language=ru-RU&sort_by=popularity.desc&page=2

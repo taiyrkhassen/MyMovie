@@ -1,6 +1,8 @@
 package com.example.mymovies.utils
 
 import com.example.mymovies.data.Movie
+import com.example.mymovies.data.Review
+import com.example.mymovies.data.Video
 import org.json.JSONObject
 import java.lang.Exception
 
@@ -9,6 +11,16 @@ class JSONUtils {
 
     companion object {
         var KEY_RESULT: String = "results"
+
+        //для отзывов
+        var KEY_AUTHOR: String = "author"
+        var KEY_CONTENT: String = "content"
+
+        //для видео
+        var KEY_KEY_OF_VIDEO: String = "key"
+        var KEY_NAME: String = "name"
+
+        //вся информация о фильме
         var KEY_VOTE_COUNT: String = "vote_count"
         var KEY_ID: String = "id"
         var KEY_TITLE: String = "title"
@@ -24,9 +36,44 @@ class JSONUtils {
         private var BIG_POSTER_SIZE = "w780"
 
 
+        fun getVideosFromJSON(jsonObject: JSONObject): ArrayList<Video> {
+            val arrayVideos: ArrayList<Video> = ArrayList()
+            try{
+                val jsonArray = jsonObject.getJSONArray(KEY_RESULT)
+                for(i in 0..jsonArray.length()){
+                    val objectReview = jsonArray.getJSONObject(i)
+                    val key = NetworkUtils.BASE_YOUTUBE_URL + objectReview.getString(KEY_KEY_OF_VIDEO)
+                    val name = objectReview.getString(KEY_NAME)
+                    val video = Video(key, name)
+                    arrayVideos.add(video)
+                }
+            } catch (exc:Exception){
+                exc.printStackTrace()
+            }
+            return arrayVideos
+        }
+
+        fun getReviewsFromJSON(jsonObject: JSONObject): ArrayList<Review> {
+            val arrayReviews: ArrayList<Review> = ArrayList()
+            try{
+                val jsonArray = jsonObject.getJSONArray(KEY_RESULT)
+                for(i in 0..jsonArray.length()){
+                    val objectReview = jsonArray.getJSONObject(i)
+                    val author = objectReview.getString(KEY_AUTHOR)
+                    val content = objectReview.getString(KEY_CONTENT)
+                    val review = Review(author, content)
+                    arrayReviews.add(review)
+                }
+            } catch (exc:Exception){
+                exc.printStackTrace()
+            }
+            return arrayReviews
+        }
+
+
         fun getMoviesFromJSON(jsonObject: JSONObject): ArrayList<Movie> {
             var arrayMovies: ArrayList<Movie> = ArrayList()
-                        try {
+            try {
                 val jsonArray = jsonObject.getJSONArray(KEY_RESULT)
                 for (i in 0..jsonArray.length()) {
                     val objectMovie = jsonArray.getJSONObject(i)

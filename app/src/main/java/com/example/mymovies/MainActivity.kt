@@ -8,14 +8,13 @@ import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.v7.widget.GridLayoutManager
 import android.util.Log
+import android.view.Menu
+import android.view.MenuItem
 import android.view.View
 import android.widget.CompoundButton
-import android.widget.GridLayout
-import android.widget.Toast
-import com.example.mymovies.data.FavoriteMovie
+import com.example.mymovies.adapters.MovieAdapter
 import com.example.mymovies.data.MainViewModel
 import com.example.mymovies.data.Movie
-import com.example.mymovies.data.MovieDatabase
 import com.example.mymovies.utils.JSONUtils
 import com.example.mymovies.utils.NetworkUtils
 import kotlinx.android.synthetic.main.activity_main.*
@@ -23,12 +22,25 @@ import kotlinx.android.synthetic.main.activity_main.*
 class MainActivity : AppCompatActivity() {
     lateinit var movieAdapter: MovieAdapter
     lateinit var viewModel: MainViewModel
-    lateinit var database: MovieDatabase
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.main_menu, menu)
+        return super.onCreateOptionsMenu(menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+        val idMenu = item?.itemId
+        when(idMenu){
+            R.id.item_main -> startActivity(Intent(this, MainActivity::class.java))
+            R.id.item_favourite -> startActivity(Intent(this, FavoriteActivity::class.java))
+        }
+        return super.onOptionsItemSelected(item)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         viewModel = ViewModelProviders.of(this).get(MainViewModel::class.java)
-        database = MovieDatabase.getInstance(this)!!
         val movieLiveData = MainViewModel.moviesLiveData
         movieLiveData.observe(this, object : Observer<List<Movie>> {
             override fun onChanged(movies: List<Movie>?) {

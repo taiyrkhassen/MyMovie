@@ -5,7 +5,7 @@ import android.arch.persistence.room.Room
 import android.arch.persistence.room.RoomDatabase
 import android.content.Context
 
-@Database(entities = [Movie::class, FavoriteMovie::class],  version = 2 , exportSchema = false)
+@Database(entities = [Movie::class, FavoriteMovie::class],  version = 3 , exportSchema = false)
 abstract class MovieDatabase : RoomDatabase() {
     companion object {
         private var movieDatabase: MovieDatabase? = null

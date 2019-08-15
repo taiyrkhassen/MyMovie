@@ -33,6 +33,6 @@ interface MoviesDAO {
     @Delete
     fun deleteFavouriteMovie(fav_movie: FavoriteMovie)
 
-    @Query("select * from favourite_movies where id == :movieId")
-    fun getFavouriteMovieById(movieId:Int):FavoriteMovie
+    @Query("select * from favourite_movies where id == :favouriteMovieId")
+    fun getFavouriteMovieById(favouriteMovieId:Int):FavoriteMovie
 }

@@ -6,6 +6,8 @@ import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.view.Menu
+import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
 import com.example.mymovies.data.FavoriteMovie
@@ -19,6 +21,21 @@ class DeatailActivity : AppCompatActivity() {
     lateinit var viewModel: MainViewModel
     lateinit var movie: Movie
     var favoriteMovie: FavoriteMovie? = null
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.main_menu, menu)
+        return super.onCreateOptionsMenu(menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+        val idMenu = item?.itemId
+        when(idMenu){
+            R.id.item_main -> startActivity(Intent(this, MainActivity::class.java))
+            R.id.item_favourite -> startActivity(Intent(this, FavoriteActivity::class.java))
+        }
+        return super.onOptionsItemSelected(item)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_deatail)
@@ -36,7 +53,6 @@ class DeatailActivity : AppCompatActivity() {
         textViewRating.setText(movie?.voteAverage.toString())
         textViewReview.setText(movie?.overView)
         textViewTitle.setText(movie?.title)
-        setStarImage()
         val favouriteMovieLiveData = MainViewModel.favouriteMoviesLiveData
         favouriteMovieLiveData.observe(this, Observer<List<FavoriteMovie>> {
 
@@ -53,7 +69,6 @@ class DeatailActivity : AppCompatActivity() {
             favoriteMovie?.let { viewModel.deleteFavouriteMovie(it) }
             Toast.makeText(this, "Удалено из избранных", Toast.LENGTH_SHORT).show()
         }
-        setStarImage()
     }
 
     fun setStarImage() {
