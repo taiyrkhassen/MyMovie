@@ -4,6 +4,7 @@ import android.app.Application
 import android.arch.lifecycle.AndroidViewModel
 import android.arch.lifecycle.LiveData
 import android.os.AsyncTask
+import android.util.Log
 
 class MainViewModel(application: Application) : AndroidViewModel(application) {
     companion object{

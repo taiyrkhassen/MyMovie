@@ -68,7 +68,7 @@ class DeatailActivity : AppCompatActivity() {
         trailerAdapter = TraillerAdapter()
         reviewAdapter.setReviews(arrayReviews)
         trailerAdapter.setTrailers(arrayTrailers)
-
+        setStarImage()
         trailerAdapter.setClickListener {
             startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(it)))
         }
@@ -84,16 +84,16 @@ class DeatailActivity : AppCompatActivity() {
         favoriteMovie = viewModel.getFavouriteMovieById(movieId)
         if (favoriteMovie == null) {
             Toast.makeText(this, "Добавлено в избранное", Toast.LENGTH_SHORT).show()
-            favoriteMovie?.let { viewModel.insertFavouriteMovie(FavoriteMovie(movie)) }
+            viewModel.insertFavouriteMovie(FavoriteMovie(movie))
         } else {
-            favoriteMovie?.let { viewModel.deleteFavouriteMovie(it) }
+            viewModel.deleteFavouriteMovie(favoriteMovie!!)
             Toast.makeText(this, "Удалено из избранных", Toast.LENGTH_SHORT).show()
         }
+        setStarImage()
     }
 
     fun setStarImage() {
         favoriteMovie = viewModel.getFavouriteMovieById(movieId)
-        Log.d("MYTAG", ""+favoriteMovie)
         if (favoriteMovie == null) {
             imageViewFavorite.setImageResource(R.drawable.diasbled)
         } else {

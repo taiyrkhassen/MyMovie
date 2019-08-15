@@ -40,9 +40,7 @@ class FavoriteMovie(
         movie.releaseDate,
         movie.backdropPath,
         movie.bigPosterPath
-    ) {
-
-    }
+    ) {}
 
     override fun toString(): String {
         return title

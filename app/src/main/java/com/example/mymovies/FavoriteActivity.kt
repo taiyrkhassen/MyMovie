@@ -6,6 +6,7 @@ import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.v7.widget.GridLayoutManager
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import com.example.mymovies.adapters.MovieAdapter
@@ -52,6 +53,7 @@ class FavoriteActivity : AppCompatActivity() {
         val favLive = MainViewModel.favouriteMoviesLiveData
         favLive.observe(this, object : (Observer<List<FavoriteMovie>>){
             override fun onChanged(favouriteMovies: List<FavoriteMovie>?) {
+                Log.d("FAVTAG", favouriteMovies.toString())
                 movieAdapter.setMovies(favouriteMovies)
             }
 
