@@ -2,7 +2,6 @@ package com.example.mymovies.data
 
 import android.arch.persistence.room.Entity
 
-@Entity(tableName = "videos")
 class Video{
     var key:String = ""
     var name:String = ""

@@ -38,7 +38,6 @@ class NetworkUtils {
             val url = String.format(BASE_REVIEWS_URL, id.toString())
             var uri = Uri.parse(url).buildUpon()
                 .appendQueryParameter(PARAMS_API_KEY, API_KEY)
-                .appendQueryParameter(PARAMS_LANGUAGE, LANGUAGE)
                 .build()
             result = URL(uri.toString())
             return result
@@ -112,12 +111,12 @@ class NetworkUtils {
             return JSONLoadTask().execute(url).get()
         }
 
-        fun getJSONobjectVideo(id: Int): JSONObject? {
+        fun getJSONobjectVideo(id: Int): JSONObject {
             val url = buildUrlTrailer(id)
             return JSONLoadTask().execute(url).get()
         }
 
-        fun getJSONobjectReviews(id: Int): JSONObject? {
+        fun getJSONobjectReviews(id: Int): JSONObject {
             val url = buildUrlReviews(id)
             return JSONLoadTask().execute(url).get()
         }

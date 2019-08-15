@@ -4,7 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     android:layout_margin="8dp">
 
     <android.support.constraint.ConstraintLayout
@@ -13,7 +13,7 @@
 
 
         <TextView
-            android:id="@+id/textViewNameVideo"
+            android:id="@+id/textViewNameMen"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
@@ -36,6 +36,6 @@
             android:text="TextView"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textViewNameVideo" />
+            app:layout_constraintTop_toBottomOf="@+id/textViewNameMen" />
     </android.support.constraint.ConstraintLayout>
 </android.support.v7.widget.CardView>

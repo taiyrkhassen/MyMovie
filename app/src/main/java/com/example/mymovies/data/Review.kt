@@ -2,7 +2,7 @@ package com.example.mymovies.data
 
 import android.arch.persistence.room.Entity
 
-@Entity(tableName = "reviews")
+
 class Review{
     var author:String = ""
     var content:String = ""

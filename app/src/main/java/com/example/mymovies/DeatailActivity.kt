@@ -3,16 +3,23 @@ package com.example.mymovies
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
+import android.net.Uri
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.support.v7.widget.LinearLayoutManager
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.widget.LinearLayout
 import android.widget.Toast
+import com.example.mymovies.adapters.ReviewAdapter
+import com.example.mymovies.adapters.TraillerAdapter
 import com.example.mymovies.data.FavoriteMovie
 import com.example.mymovies.data.MainViewModel
 import com.example.mymovies.data.Movie
+import com.example.mymovies.utils.JSONUtils
+import com.example.mymovies.utils.NetworkUtils
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.activity_deatail.*
 
@@ -21,6 +28,8 @@ class DeatailActivity : AppCompatActivity() {
     lateinit var viewModel: MainViewModel
     lateinit var movie: Movie
     var favoriteMovie: FavoriteMovie? = null
+    lateinit var trailerAdapter:TraillerAdapter
+    lateinit var reviewAdapter: ReviewAdapter
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.main_menu, menu)
@@ -47,17 +56,28 @@ class DeatailActivity : AppCompatActivity() {
             finish()
         }
         movie = viewModel.getMovieById(movieId)!!
-        Picasso.get().load(movie?.bigPosterPath).into(imageViewPosterImage)
-        textViewDate.setText(movie?.releaseDate)
-        textViewOriginal.setText(movie?.originalTitle)
-        textViewRating.setText(movie?.voteAverage.toString())
-        textViewReview.setText(movie?.overView)
-        textViewTitle.setText(movie?.title)
-        val favouriteMovieLiveData = MainViewModel.favouriteMoviesLiveData
-        favouriteMovieLiveData.observe(this, Observer<List<FavoriteMovie>> {
+        Picasso.get().load(movie.bigPosterPath).into(imageViewPosterImage)
+        textViewDate.setText(movie.releaseDate)
+        textViewOriginal.setText(movie.originalTitle)
+        textViewRating.setText(movie.voteAverage.toString())
+        textViewReview.setText(movie.overView)
+        textViewTitle.setText(movie.title)
+        val arrayReviews = JSONUtils.getReviewsFromJSON(NetworkUtils.getJSONobjectReviews(movieId))
+        val arrayTrailers = JSONUtils.getVideosFromJSON(NetworkUtils.getJSONobjectVideo(movieId))
+        reviewAdapter = ReviewAdapter()
+        trailerAdapter = TraillerAdapter()
+        reviewAdapter.setReviews(arrayReviews)
+        trailerAdapter.setTrailers(arrayTrailers)
 
-        })
+        trailerAdapter.setClickListener {
+            startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(it)))
+        }
 
+
+        recyclerViewTrailers.layoutManager = LinearLayoutManager(this)
+        recyclerViewReviewss.layoutManager = LinearLayoutManager(this)
+        recyclerViewTrailers.adapter = trailerAdapter
+        recyclerViewReviewss.adapter = reviewAdapter
     }
 
     fun changeFavourite(view: View) {

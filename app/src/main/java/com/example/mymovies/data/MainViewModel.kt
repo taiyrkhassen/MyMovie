@@ -16,6 +16,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         database = MovieDatabase.getInstance(getApplication())!!
         moviesLiveData = database.moviesDao().getAllMovies()
         favouriteMoviesLiveData = database.moviesDao().getAllFavouriteMovies()
+
     }
 
     fun getMovieById(id: Int): Movie? {
