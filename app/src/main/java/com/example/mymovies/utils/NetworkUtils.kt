@@ -83,11 +83,20 @@ class NetworkUtils {
         //а лоадер берет данные с бандла и использукет синглтон
         class JSONLoader : AsyncTaskLoader<JSONObject> {
             private var bundle:Bundle?
+            lateinit var onStartLoadingListener:OnStartLoadingListener
+
+            public interface OnStartLoadingListener{
+                fun onStartLoading()
+            }
+
             constructor(context: Context, bundle: Bundle?) : super(context) {
                 this.bundle = bundle
             }
+
             override fun onStartLoading() {
-                super.onStartLoading()
+                if(onStartLoadingListener!=null) {
+                    super.onStartLoading()
+                }
                 forceLoad()
             }
 

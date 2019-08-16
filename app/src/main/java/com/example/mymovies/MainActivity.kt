@@ -9,11 +9,15 @@ import android.os.Bundle
 import android.support.v4.app.LoaderManager
 import android.support.v4.content.Loader
 import android.support.v7.widget.GridLayoutManager
+import android.util.DisplayMetrics
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.view.View.GONE
+import android.view.View.VISIBLE
 import android.widget.CompoundButton
+import android.widget.Toast
 import com.example.mymovies.adapters.MovieAdapter
 import com.example.mymovies.data.MainViewModel
 import com.example.mymovies.data.Movie
@@ -22,16 +26,19 @@ import com.example.mymovies.utils.NetworkUtils
 import kotlinx.android.synthetic.main.activity_main.*
 import org.json.JSONObject
 
-class MainActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<JSONObject>{
+class MainActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<JSONObject> {
 
-    companion object{
+    companion object {
         private final var LOADER_ID = 133
-        private lateinit var loader:LoaderManager
+        private lateinit var loader: LoaderManager
         var pageCount = 1
+        var methodOfSort: Int = 0
     }
+
     lateinit var movieAdapter: MovieAdapter
     lateinit var viewModel: MainViewModel
     var isLoaded = false
+
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.main_menu, menu)
         return super.onCreateOptionsMenu(menu)
@@ -39,7 +46,7 @@ class MainActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<JSONObje
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         val idMenu = item?.itemId
-        when(idMenu){
+        when (idMenu) {
             R.id.item_main -> startActivity(Intent(this, MainActivity::class.java))
             R.id.item_favourite -> startActivity(Intent(this, FavoriteActivity::class.java))
         }
@@ -54,14 +61,16 @@ class MainActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<JSONObje
         val movieLiveData = MainViewModel.moviesLiveData
         movieLiveData.observe(this, object : Observer<List<Movie>> {
             override fun onChanged(movies: List<Movie>?) {
-                movieAdapter.setMovies(movies)
-            }
+                if (pageCount == 1) {
+                    movieAdapter.setMovies(movies);
+                }
 
+            }
         })
 
 
         switchSort.isChecked = true
-        recyclerViewPosters.layoutManager = GridLayoutManager(this, 2)
+        recyclerViewPosters.layoutManager = GridLayoutManager(this, getColumnCount())
         movieAdapter = MovieAdapter()
         recyclerViewPosters.adapter = movieAdapter
 
@@ -73,7 +82,7 @@ class MainActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<JSONObje
          })*/
 
         movieAdapter.setOnPosterClickListener {
-            val movie:Movie = movieAdapter.getMovies().get(it)
+            val movie: Movie = movieAdapter.getMovies().get(it)
             val intent: Intent = Intent(this, DeatailActivity::class.java)
             intent.putExtra("id", movie.id)
             startActivity(intent)
@@ -81,12 +90,13 @@ class MainActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<JSONObje
 
 
         movieAdapter.setOnRichEndListener {
-            // todo end rich
+            if (!isLoaded) {
+                downloadData(methodOfSort, pageCount)
+            }
         }
         switchSort.setOnCheckedChangeListener(object : CompoundButton.OnCheckedChangeListener {
             override fun onCheckedChanged(buttonView: CompoundButton?, isChecked: Boolean) {
                 pageCount = 1
-                val methodOfSort: Int
                 if (isChecked) {
                     methodOfSort = NetworkUtils.BY_RATING
                     textViewMostPopular.setTextColor(Color.WHITE)
@@ -96,7 +106,7 @@ class MainActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<JSONObje
                     textViewMostPopular.setTextColor(resources.getColor(R.color.colorAccent))
                     textViewMostRaiting.setTextColor(Color.WHITE)
                 }
-                downloadData(methodOfSort, 2)
+                downloadData(methodOfSort, pageCount)
             }
         })
         switchSort.isChecked = false
@@ -115,32 +125,64 @@ class MainActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<JSONObje
     }
 
     fun downloadData(methodOfSort: Int, page: Int) {
-        var url = NetworkUtils.buildURL(methodOfSort, 2)
+        var url = NetworkUtils.buildURL(methodOfSort, page)
         var bundle = Bundle()
         bundle.putString("url", url.toString())
         loader.restartLoader(LOADER_ID, bundle, this)
     }
+
     override fun onCreateLoader(i: Int, bundle: Bundle?): Loader<JSONObject> {
         var jsonLoader = NetworkUtils.Companion.JSONLoader(this, bundle)
+        showLoading()
+        jsonLoader.onStartLoadingListener = object : NetworkUtils.Companion.JSONLoader.OnStartLoadingListener {
+            override fun onStartLoading() {
+                isLoaded = true
+            }
+        }
+
         return jsonLoader
     }
+
 
     override fun onLoadFinished(loaderL: Loader<JSONObject>, json: JSONObject?) {
         val movies: ArrayList<Movie>? = json?.let { JSONUtils.getMoviesFromJSON(it) }
         if (movies != null && movies.size != 0) {
-            viewModel.deleteAllMovies()
+            if (pageCount == 1) {
+                viewModel.deleteAllMovies()
+                movieAdapter.clear()
+            }
             for (movie in movies) {
                 viewModel.insertMovie(movie)
-                Log.d("task", movie.posterPath+ " ")
             }
+            movieAdapter.addMovies(movies)
             pageCount++
         }
         loader.destroyLoader(LOADER_ID)
+        isLoaded = false
+        hideLoading()
     }
 
     override fun onLoaderReset(p0: Loader<JSONObject>) {
 
     }
+
+    fun getColumnCount(): Int {
+        val displayMetrics = DisplayMetrics()
+        windowManager.defaultDisplay.getMetrics(displayMetrics) // getting dp
+        val whidth = displayMetrics.widthPixels / displayMetrics.density.toInt()
+        if ((whidth / 185) > 2) return whidth / 185
+        else return 2
+    }
+
+    fun showLoading() {
+        progress_bar.visibility = VISIBLE
+    }
+
+    fun hideLoading() {
+        progress_bar.visibility = GONE
+    }
+
+
 //https://api.themoviedb.org/3/discover/movie?api_key=bc0697c61cac9317cc0873d8477d1b07&language=en-US&sort_by=popularity.desc&include_adult=false&include_video=false&page=1&vote_count.gte=1000
 //http://api.themoviedb.org/3/discover/movie?api_key=bc0697c61cac9317cc0873d8477d1b07&language=ru-RU&sort_by=vote_average.desc&page=2&vote_average.gte=500
 }

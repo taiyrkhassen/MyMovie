@@ -180,7 +180,8 @@
                 android:layout_marginTop="5dp"
                 android:id="@+id/recyclerViewTrailers"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"/>
+                android:layout_height="wrap_content"
+                android:nestedScrollingEnabled="false"/>
 
         <android.support.v7.widget.RecyclerView
                 app:layout_constraintTop_toBottomOf="@+id/recyclerViewTrailers"
@@ -190,6 +191,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:id="@+id/recyclerViewReviewss"
+                android:nestedScrollingEnabled="false"
         />
     </android.support.constraint.ConstraintLayout>
 </ScrollView>
