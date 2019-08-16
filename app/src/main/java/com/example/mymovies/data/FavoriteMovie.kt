@@ -5,6 +5,7 @@ import android.arch.persistence.room.Ignore
 
 @Entity(tableName = "favourite_movies")
 class FavoriteMovie(
+    uniqueId:Int,
     id: Int,
     voteCount: Int,
     title: String,
@@ -16,6 +17,7 @@ class FavoriteMovie(
     backdropPath: String,
     bigPosterPath: String
 ) : Movie(
+    uniqueId,
     id,
     voteCount,
     title,
@@ -30,6 +32,7 @@ class FavoriteMovie(
 
     @Ignore
     constructor(movie: Movie) : this(
+        movie.uniqueId,
         movie.id,
         movie.voteCount,
         movie.title,

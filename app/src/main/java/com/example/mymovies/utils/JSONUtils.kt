@@ -1,5 +1,6 @@
 package com.example.mymovies.utils
 
+import android.util.Log
 import com.example.mymovies.data.Movie
 import com.example.mymovies.data.Review
 import com.example.mymovies.data.Video
@@ -96,6 +97,7 @@ class JSONUtils {
 
             } catch (exc: Throwable) {
                 exc.printStackTrace()
+                Log.d("download", exc.message)
             }
 
             return arrayMovies

@@ -6,6 +6,8 @@ import android.content.Intent
 import android.graphics.Color
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.support.v4.app.LoaderManager
+import android.support.v4.content.Loader
 import android.support.v7.widget.GridLayoutManager
 import android.util.Log
 import android.view.Menu
@@ -18,11 +20,18 @@ import com.example.mymovies.data.Movie
 import com.example.mymovies.utils.JSONUtils
 import com.example.mymovies.utils.NetworkUtils
 import kotlinx.android.synthetic.main.activity_main.*
+import org.json.JSONObject
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<JSONObject>{
+
+    companion object{
+        private final var LOADER_ID = 133
+        private lateinit var loader:LoaderManager
+        var pageCount = 1
+    }
     lateinit var movieAdapter: MovieAdapter
     lateinit var viewModel: MainViewModel
-
+    var isLoaded = false
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.main_menu, menu)
         return super.onCreateOptionsMenu(menu)
@@ -40,6 +49,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        loader = LoaderManager.getInstance(this)
         viewModel = ViewModelProviders.of(this).get(MainViewModel::class.java)
         val movieLiveData = MainViewModel.moviesLiveData
         movieLiveData.observe(this, object : Observer<List<Movie>> {
@@ -63,8 +73,8 @@ class MainActivity : AppCompatActivity() {
          })*/
 
         movieAdapter.setOnPosterClickListener {
-            var movie:Movie = movieAdapter.getMovies().get(it)
-            var intent: Intent = Intent(this, DeatailActivity::class.java)
+            val movie:Movie = movieAdapter.getMovies().get(it)
+            val intent: Intent = Intent(this, DeatailActivity::class.java)
             intent.putExtra("id", movie.id)
             startActivity(intent)
         }
@@ -75,6 +85,7 @@ class MainActivity : AppCompatActivity() {
         }
         switchSort.setOnCheckedChangeListener(object : CompoundButton.OnCheckedChangeListener {
             override fun onCheckedChanged(buttonView: CompoundButton?, isChecked: Boolean) {
+                pageCount = 1
                 val methodOfSort: Int
                 if (isChecked) {
                     methodOfSort = NetworkUtils.BY_RATING
@@ -104,7 +115,17 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun downloadData(methodOfSort: Int, page: Int) {
-        val json = NetworkUtils.getJSONobject(methodOfSort, page)
+        var url = NetworkUtils.buildURL(methodOfSort, 2)
+        var bundle = Bundle()
+        bundle.putString("url", url.toString())
+        loader.restartLoader(LOADER_ID, bundle, this)
+    }
+    override fun onCreateLoader(i: Int, bundle: Bundle?): Loader<JSONObject> {
+        var jsonLoader = NetworkUtils.Companion.JSONLoader(this, bundle)
+        return jsonLoader
+    }
+
+    override fun onLoadFinished(loaderL: Loader<JSONObject>, json: JSONObject?) {
         val movies: ArrayList<Movie>? = json?.let { JSONUtils.getMoviesFromJSON(it) }
         if (movies != null && movies.size != 0) {
             viewModel.deleteAllMovies()
@@ -112,10 +133,16 @@ class MainActivity : AppCompatActivity() {
                 viewModel.insertMovie(movie)
                 Log.d("task", movie.posterPath+ " ")
             }
+            pageCount++
         }
+        loader.destroyLoader(LOADER_ID)
     }
 
+    override fun onLoaderReset(p0: Loader<JSONObject>) {
 
+    }
+//https://api.themoviedb.org/3/discover/movie?api_key=bc0697c61cac9317cc0873d8477d1b07&language=en-US&sort_by=popularity.desc&include_adult=false&include_video=false&page=1&vote_count.gte=1000
+//http://api.themoviedb.org/3/discover/movie?api_key=bc0697c61cac9317cc0873d8477d1b07&language=ru-RU&sort_by=vote_average.desc&page=2&vote_average.gte=500
 }
 
 

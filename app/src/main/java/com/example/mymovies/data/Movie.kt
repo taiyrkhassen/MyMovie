@@ -1,11 +1,13 @@
 package com.example.mymovies.data
 
 import android.arch.persistence.room.Entity
+import android.arch.persistence.room.Ignore
 import android.arch.persistence.room.PrimaryKey
 
 @Entity(tableName = "movies")
 open class Movie {
-    @PrimaryKey
+    @PrimaryKey(autoGenerate = true)
+    var uniqueId:Int = 0
     var id: Int = 0;
     var voteCount: Int = 0;
     var title:String= ""
@@ -16,6 +18,32 @@ open class Movie {
     var releaseDate:String = ""
     var backdropPath:String = ""
     var bigPosterPath:String = ""
+    constructor(
+        uniqueId:Int,
+        id: Int,
+        voteCount: Int,
+        title: String,
+        originalTitle: String,
+        overView: String,
+        posterPath: String,
+        voteAverage: Double,
+        releaseDate: String,
+        backdropPath:String,
+        bigPosterPath:String
+    ) {
+        this.id = id
+        this.voteCount = voteCount
+        this.title = title
+        this.originalTitle = originalTitle
+        this.overView = overView
+        this.posterPath = posterPath
+        this.voteAverage = voteAverage
+        this.releaseDate = releaseDate
+        this.backdropPath = backdropPath
+        this.bigPosterPath = bigPosterPath
+    }
+
+    @Ignore
     constructor(
         id: Int,
         voteCount: Int,
