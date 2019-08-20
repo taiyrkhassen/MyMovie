@@ -16,6 +16,7 @@ import java.util.List;
 
 public class TraillerAdapter extends RecyclerView.Adapter<TraillerAdapter.TrailerHolder> {
     List<Video> trailerArray;
+    List<Video> sdsdd;
     OnTraillerClickListener clickListener;
     public TraillerAdapter(){
         trailerArray = new ArrayList<>();
