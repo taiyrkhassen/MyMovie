@@ -15,7 +15,15 @@ import com.example.mymovies.data.MainViewModel
 import com.example.mymovies.data.Movie
 import kotlinx.android.synthetic.main.activity_favorite.*
 
-class FavoriteActivity : AppCompatActivity() {
+class FavoriteActivity : AppCompatActivity(), MovieAdapter.onPosterClickListener {
+
+    override fun onClickItem(position: Int) {
+        var movie: Movie = movieAdapter.getMovies().get(position)
+        var intent = Intent(this, DeatailActivity::class.java)
+        intent.putExtra("id", movie.id)
+        startActivity(intent)
+    }
+
     lateinit var movieAdapter: MovieAdapter
     lateinit var viewModel:MainViewModel
 
@@ -36,17 +44,12 @@ class FavoriteActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_favorite)
-        movieAdapter = MovieAdapter()
+        movieAdapter = MovieAdapter(this)
         viewModel = ViewModelProviders.of(this).get(MainViewModel::class.java)
         downloadFavourite()
         recyclerViewFavorite.adapter = movieAdapter
         recyclerViewFavorite.layoutManager = GridLayoutManager(this, 2)
-        movieAdapter.setOnPosterClickListener {
-            var movie: Movie = movieAdapter.getMovies().get(it)
-            var intent: Intent = Intent(this, DeatailActivity::class.java)
-            intent.putExtra("id", movie.id)
-            startActivity(intent)
-        }
+
     }
 
     fun downloadFavourite(){

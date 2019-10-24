@@ -171,8 +171,7 @@
                 app:layout_constraintEnd_toEndOf="@+id/imageViewPosterImage"
                 app:layout_constraintTop_toBottomOf="@+id/imageViewPosterImage"
                 app:layout_constraintVertical_bias="0.666"
-                app:srcCompat="@drawable/diasbled"
-                android:onClick="changeFavourite"/>
+                app:srcCompat="@drawable/diasbled"/>
         <android.support.v7.widget.RecyclerView
                 app:layout_constraintTop_toBottomOf="@+id/textViewReview"
                 app:layout_constraintStart_toStartOf="parent"

@@ -11,6 +11,7 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.Toast
 import com.example.mymovies.adapters.ReviewAdapter
@@ -30,6 +31,7 @@ class DeatailActivity : AppCompatActivity() {
     var favoriteMovie: FavoriteMovie? = null
     lateinit var trailerAdapter:TraillerAdapter
     lateinit var reviewAdapter: ReviewAdapter
+    var imageStar:ImageView?= null
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.main_menu, menu)
@@ -48,6 +50,9 @@ class DeatailActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_deatail)
+
+        imageStar = findViewById(R.id.imageViewFavorite)
+
         viewModel = ViewModelProviders.of(this).get(MainViewModel::class.java)
         var intent = intent
         if (intent != null && intent.hasExtra("id")) {
@@ -78,18 +83,24 @@ class DeatailActivity : AppCompatActivity() {
         recyclerViewReviewss.layoutManager = LinearLayoutManager(this)
         recyclerViewTrailers.adapter = trailerAdapter
         recyclerViewReviewss.adapter = reviewAdapter
+
+        imageStar!!.setOnClickListener{
+            changeFavourite()
+        }
     }
 
-    fun changeFavourite(view: View) {
+    fun changeFavourite() {
         favoriteMovie = viewModel.getFavouriteMovieById(movieId)
         if (favoriteMovie == null) {
             Toast.makeText(this, "Добавлено в избранное", Toast.LENGTH_SHORT).show()
             viewModel.insertFavouriteMovie(FavoriteMovie(movie))
+
         } else {
             viewModel.deleteFavouriteMovie(favoriteMovie!!)
             Toast.makeText(this, "Удалено из избранных", Toast.LENGTH_SHORT).show()
         }
         setStarImage()
+
     }
 
     fun setStarImage() {

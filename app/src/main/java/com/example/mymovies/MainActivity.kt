@@ -10,14 +10,12 @@ import android.support.v4.app.LoaderManager
 import android.support.v4.content.Loader
 import android.support.v7.widget.GridLayoutManager
 import android.util.DisplayMetrics
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.widget.CompoundButton
-import android.widget.Toast
 import com.example.mymovies.adapters.MovieAdapter
 import com.example.mymovies.data.MainViewModel
 import com.example.mymovies.data.Movie
@@ -26,7 +24,17 @@ import com.example.mymovies.utils.NetworkUtils
 import kotlinx.android.synthetic.main.activity_main.*
 import org.json.JSONObject
 
-class MainActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<JSONObject> {
+class MainActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<JSONObject>,
+    MovieAdapter.onPosterClickListener {
+
+
+
+    override fun onClickItem(position: Int) {
+        val movie: Movie = movieAdapter.getMovies().get(position)
+        val intent = Intent(this, DeatailActivity::class.java)
+        intent.putExtra("id", movie.id)
+        startActivity(intent)
+    }
 
     companion object {
         private final var LOADER_ID = 133
@@ -62,7 +70,7 @@ class MainActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<JSONObje
         movieLiveData.observe(this, object : Observer<List<Movie>> {
             override fun onChanged(movies: List<Movie>?) {
                 if (pageCount == 1) {
-                    movieAdapter.setMovies(movies);
+                    movieAdapter.setMovies(movies)
                 }
 
             }
@@ -71,23 +79,8 @@ class MainActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<JSONObje
 
         switchSort.isChecked = true
         recyclerViewPosters.layoutManager = GridLayoutManager(this, getColumnCount())
-        movieAdapter = MovieAdapter()
+        movieAdapter = MovieAdapter(this)
         recyclerViewPosters.adapter = movieAdapter
-
-        /* movieAdapter.setOnPosterClickListener(object: MovieAdapter.onPosterClickListener{
-             override fun onClickItem(position: Int) {
-                 Toast.makeText(this, it.toString(), Toast.LENGTH_SHORT).show()
-             }
-
-         })*/
-
-        movieAdapter.setOnPosterClickListener {
-            val movie: Movie = movieAdapter.getMovies().get(it)
-            val intent: Intent = Intent(this, DeatailActivity::class.java)
-            intent.putExtra("id", movie.id)
-            startActivity(intent)
-        }
-
 
         movieAdapter.setOnRichEndListener {
             if (!isLoaded) {
@@ -134,11 +127,12 @@ class MainActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<JSONObje
     override fun onCreateLoader(i: Int, bundle: Bundle?): Loader<JSONObject> {
         var jsonLoader = NetworkUtils.Companion.JSONLoader(this, bundle)
         showLoading()
-        jsonLoader.onStartLoadingListener = object : NetworkUtils.Companion.JSONLoader.OnStartLoadingListener {
-            override fun onStartLoading() {
-                isLoaded = true
+        jsonLoader.onStartLoadingListener =
+            object : NetworkUtils.Companion.JSONLoader.OnStartLoadingListener {
+                override fun onStartLoading() {
+                    isLoaded = true
+                }
             }
-        }
 
         return jsonLoader
     }

@@ -16,21 +16,19 @@ import java.util.List;
 
 public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHolder> {
     List<Movie> movies;
-    private onPosterClickListener onPosterClickListener;
-    public MovieAdapter(){
+    public onPosterClickListener onPosterClickListener;
+    public onRichEndListener onRichEndListener;
+    public MovieAdapter(onPosterClickListener clickListener){
         movies = new ArrayList<>();
+        this.onPosterClickListener = clickListener;
     }
-    private onRichEndListener onRichEndListener;
-    interface onPosterClickListener{
+
+    public interface onPosterClickListener{
         void onClickItem(int position);
     }
 
-    interface onRichEndListener{
+    public interface onRichEndListener{
         void onReachEnd();
-    }
-
-    public void setOnPosterClickListener(onPosterClickListener onPosterClickListener) {
-        this.onPosterClickListener = onPosterClickListener;
     }
 
     public void setOnRichEndListener(MovieAdapter.onRichEndListener onRichEndListener) {
@@ -41,7 +39,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
     @Override
     public MovieViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
         View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.movie_item, viewGroup, false);
-        return new MovieViewHolder(view);
+        return new MovieViewHolder(view, onPosterClickListener);
     }
 
     @Override
@@ -64,19 +62,21 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
     }
 
 
-    class MovieViewHolder extends RecyclerView.ViewHolder {
+    class MovieViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         ImageView imagePoster;
-        public MovieViewHolder(@NonNull View itemView){
+        onPosterClickListener clickListener;
+        public MovieViewHolder(@NonNull View itemView, onPosterClickListener clickListener){
             super(itemView);
             imagePoster = itemView.findViewById(R.id.film_poster_images);
-            itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if(onPosterClickListener!=null)
-                        onPosterClickListener.onClickItem(getAdapterPosition());
-                }
-            });
+            this.clickListener = clickListener;
+            itemView.setOnClickListener(this);
         }
+
+        @Override
+        public void onClick(View v) {
+            clickListener.onClickItem(getAdapterPosition());
+        }
+
     }
 
     public List<Movie> getMovies() {

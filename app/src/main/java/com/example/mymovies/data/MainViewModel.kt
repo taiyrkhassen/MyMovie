@@ -7,7 +7,7 @@ import android.os.AsyncTask
 import android.util.Log
 
 class MainViewModel(application: Application) : AndroidViewModel(application) {
-    companion object{
+    companion object {
         lateinit var database: MovieDatabase
         lateinit var moviesLiveData: LiveData<List<Movie>>
         lateinit var favouriteMoviesLiveData: LiveData<List<FavoriteMovie>>
@@ -24,29 +24,27 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         return GetMovieTask().execute(id).get()
     }
 
-    fun insertMovie(movie:Movie){
+    fun insertMovie(movie: Movie) {
         InsertMovieTask().execute(movie)
     }
-    fun deleteAllMovies(){
+
+    fun deleteAllMovies() {
         DeleteAllTask().execute()
     }
 
-    fun deleteMovie(movie:Movie){
-        DeleteMovieTask().execute(movie)
-    }
 
-    fun insertFavouriteMovie(movie:FavoriteMovie){
+
+    fun insertFavouriteMovie(movie: FavoriteMovie) {
         InsertFavouriteMovieTask().execute(movie)
     }
 
-    fun deleteFavouriteMovie(movie:FavoriteMovie){
+    fun deleteFavouriteMovie(movie: FavoriteMovie) {
         DeleteFavouriteMovieTask().execute(movie)
     }
 
     fun getFavouriteMovieById(id: Int): FavoriteMovie? {
         return GetFavouriteMovieTask().execute(id).get()
     }
-
 
 
     private class GetMovieTask : AsyncTask<Int, Void, Movie>() {
@@ -67,6 +65,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             return null
         }
     }
+
     private class DeleteAllTask : AsyncTask<Void, Void, Void>() {
         override fun doInBackground(vararg params: Void?): Void? {
             database.moviesDao().deleteAllMovies()
@@ -74,31 +73,23 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         }
 
     }
-    private class DeleteMovieTask : AsyncTask<Movie, Void, Void>() {
-        override fun doInBackground(vararg params: Movie?): Void? {
-            params[0]?.let {
-                database.moviesDao().deleteMovie(it)
-            }
-            return null
-        }
-    }
 
     private class InsertFavouriteMovieTask : AsyncTask<FavoriteMovie, Void, Void>() {
-        override fun doInBackground(vararg params: FavoriteMovie?): Void ?{
+        override fun doInBackground(vararg params: FavoriteMovie?): Void? {
             params[0]?.let {
                 database.moviesDao().insertFavouriteMovie(it)
             }
             return null
         }
     }
+
     private class DeleteFavouriteMovieTask : AsyncTask<FavoriteMovie, Void, Void>() {
         override fun doInBackground(vararg params: FavoriteMovie?): Void? {
-            params[0]?.let {
-                database.moviesDao().deleteFavouriteMovie(it)
-            }
+            database.moviesDao().deleteFavouriteMovie(params[0]!!.uniqueId)
             return null
         }
     }
+
     private class GetFavouriteMovieTask : AsyncTask<Int, Void, FavoriteMovie>() {
         override fun doInBackground(vararg params: Int?): FavoriteMovie? {
             var movie: FavoriteMovie? = null
@@ -108,17 +99,5 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             return movie
         }
     }
-
-/*
-    //не нужно так как рум это делает за нас, в начале мы уже получаем обьект лайвДата
-    private class GetAllFavouriteMovieTask : AsyncTask<Void, Void, LiveData<List<FavoriteMovie>>>() {
-        override fun doInBackground(vararg params: Void?): LiveData<List<FavoriteMovie>>? {
-            var favMovieLive:LiveData<List<FavoriteMovie>>? = null
-            params[0]?.let{
-                favMovieLive = database.moviesDao().getAllFavouriteMovies()
-            }
-            return favMovieLive
-        }
-    }*/
 
 }
