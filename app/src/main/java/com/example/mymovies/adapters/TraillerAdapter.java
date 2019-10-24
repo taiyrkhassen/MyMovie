@@ -9,6 +9,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.mymovies.R;
+import com.example.mymovies.data.Review;
 import com.example.mymovies.data.Video;
 
 import java.util.ArrayList;
@@ -16,6 +17,8 @@ import java.util.List;
 
 public class TraillerAdapter extends RecyclerView.Adapter<TraillerAdapter.TrailerHolder> {
     List<Video> trailerArray;
+    List<Video> sdsdd;
+    List<Review> sds;
     OnTraillerClickListener clickListener;
     public TraillerAdapter(){
         trailerArray = new ArrayList<>();
